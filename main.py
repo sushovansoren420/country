@@ -1,10 +1,21 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from bs4 import BeautifulSoup
-from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse
 
+# Create FastAPI app
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (or specify certain origins if needed)
+    allow_credentials=True,
+    allow_methods=["GET"],  # Allow GET requests (adjust as needed)
+    allow_headers=["*"],    # Allow all headers
+)
+
+# Your existing code to fetch headings
 def get_markdown_headings_only(country_name: str):
     formatted_name = country_name.strip().replace(" ", "_")
     url = f"https://en.wikipedia.org/wiki/{formatted_name}"
@@ -27,6 +38,6 @@ def get_markdown_headings_only(country_name: str):
     except Exception as e:
         return f"Error: {e}"
 
-@app.get("/wiki-headings", response_class=PlainTextResponse)
+@app.get("/wiki-headings")
 def wiki_headings(country: str):
     return get_markdown_headings_only(country)
